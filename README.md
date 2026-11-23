@@ -1,9 +1,9 @@
 # Unit Testing para Ciencia de Datos — Tarea 3
 
+Proyecto mínimo con dos clases de utilidades y sus esqueletos de pruebas.
+
 ## Nombre Alumno
 Gonzalo Eduardo Galvez Bobadilla
-
-Proyecto mínimo con dos clases de utilidades y sus esqueletos de pruebas.
 
 ## Estructura
 

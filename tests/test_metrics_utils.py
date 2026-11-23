@@ -56,7 +56,11 @@ class TestMetricsUtils(unittest.TestCase):
         - Crear y_true con 3 valores e y_pred con 2 valores
         - Llamar a rmse y verificar que se lanza un ValueError (usar self.assertRaises)
         """
-        self.fail("TODO: implementar este test")
+        metrics=MetricsUtils()
+        y_true=[1.0,2.0,3.0]
+        y_pred=[1.0,2.0]
+        with self.assertRaises(ValueError):
+            metrics.rmse(y_true,y_pred)
 
     def test_mae_basic_case(self):
         """Test que verifica que mae calcula correctamente el error absoluto medio.
@@ -67,7 +71,13 @@ class TestMetricsUtils(unittest.TestCase):
         - Llamar a mae y verificar el valor esperado (para el ejemplo: (1+0+2)/3 = 1.0)
           (usar numpy.testing.assert_allclose o self.assertAlmostEqual)
         """
-        self.fail("TODO: implementar este test")
+        metrics = MetricsUtils()
+        y_true = [1, 2, 3]
+        y_pred = [2, 2, 1]
+
+        result = metrics.mae(y_true, y_pred)
+
+        npt.assert_allclose(result, 1.0)
 
     def test_mae_is_zero_for_identical_inputs(self):
         """Test que verifica que mae devuelve 0 cuando la predicción es perfecta.
@@ -76,7 +86,12 @@ class TestMetricsUtils(unittest.TestCase):
         - Usar la misma lista como y_true e y_pred
         - Verificar que mae devuelve 0.0 (usar self.assertAlmostEqual)
         """
-        self.fail("TODO: implementar este test")
+        metrics = MetricsUtils()
+        y = [1.5, -2.0, 3.0, 4.0]
+
+        result = metrics.mae(y, y)
+
+        self.assertAlmostEqual(result, 0.0)
 
     def test_accuracy_basic_case(self):
         """Test que verifica que accuracy devuelve la fracción de aciertos.
@@ -86,7 +101,15 @@ class TestMetricsUtils(unittest.TestCase):
         - Llamar a accuracy y verificar que el resultado es 0.75 (usar self.assertAlmostEqual)
         - Verificar que el resultado está en el rango [0, 1] (usar self.assertGreaterEqual y self.assertLessEqual)
         """
-        self.fail("TODO: implementar este test")
+        metrics = MetricsUtils()
+        y_true = [1, 0, 1, 1]
+        y_pred = [1, 0, 0, 1]
+
+        result = metrics.accuracy(y_true, y_pred)
+
+        self.assertAlmostEqual(result, 0.75)
+        self.assertGreaterEqual(result, 0.0)
+        self.assertLessEqual(result, 1.0)
 
     def test_accuracy_raises_for_empty_inputs(self):
         """Test que verifica que accuracy lanza ValueError con secuencias vacías.
@@ -95,7 +118,12 @@ class TestMetricsUtils(unittest.TestCase):
         - Llamar a accuracy con dos listas vacías
         - Verificar que se lanza un ValueError (usar self.assertRaises)
         """
-        self.fail("TODO: implementar este test")
+        metrics = MetricsUtils()
+        y_true = []
+        y_pred = []
+
+        with self.assertRaises(ValueError):
+            metrics.accuracy(y_true, y_pred)
 
     def test_confusion_matrix_rows_are_true_labels(self):
         """Test que verifica la orientación de la matriz de confusión
@@ -109,7 +137,16 @@ class TestMetricsUtils(unittest.TestCase):
           (para el ejemplo: [[0, 2], [0, 1]])
         - Verificar que la suma de todas las celdas es igual a len(y_true) (usar self.assertEqual)
         """
-        self.fail("TODO: implementar este test")
+        metrics = MetricsUtils()
+        y_true = [0, 0, 1]
+        y_pred = [1, 1, 1]
+
+        result = metrics.confusion_matrix(y_true, y_pred, labels=[0, 1])
+
+        expected = np.array([[0, 2],
+                             [0, 1]])
+        npt.assert_array_equal(result, expected)
+        self.assertEqual(result.sum(), len(y_true))
 
     def test_confusion_matrix_raises_for_unknown_label(self):
         """Test que verifica que confusion_matrix lanza ValueError cuando y_true o
@@ -120,7 +157,12 @@ class TestMetricsUtils(unittest.TestCase):
         - Llamar a confusion_matrix con labels=["a", "b"]
         - Verificar que se lanza un ValueError (usar self.assertRaises)
         """
-        self.fail("TODO: implementar este test")
+        metrics = MetricsUtils()
+        y_true = ["a", "b"]
+        y_pred = ["a", "c"]
+
+        with self.assertRaises(ValueError):
+            metrics.confusion_matrix(y_true, y_pred, labels=["a", "b"])
 
 
 if __name__ == "__main__":
