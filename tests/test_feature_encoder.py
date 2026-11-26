@@ -69,7 +69,18 @@ class TestFeatureEncoder(unittest.TestCase):
         - Verificar que cada fila suma exactamente 1 en las columnas indicadoras
           (usar numpy.testing.assert_array_equal o comparar con una lista con self.assertEqual)
         """
-        self.fail("TODO: implementar este test")
+        df = make_sample_df()
+        encoder = FeatureEncoder()
+
+        result = encoder.one_hot(df, "city")
+
+        self.assertNotIn("city", result.columns)
+        indicator_cols = ["city_BOG", "city_LPZ", "city_SCL"]
+        for col in indicator_cols:
+            self.assertIn(col, result.columns)
+        row_sums = result[indicator_cols].sum(axis=1).tolist()
+        self.assertEqual(row_sums, [1, 1, 1, 1])
+
 
     def test_one_hot_raises_keyerror_for_unknown_column(self):
         """Test que verifica que one_hot lanza KeyError con una columna inexistente.
@@ -79,7 +90,11 @@ class TestFeatureEncoder(unittest.TestCase):
         - Llamar a one_hot con la columna "country"
         - Verificar que se lanza un KeyError (usar self.assertRaises)
         """
-        self.fail("TODO: implementar este test")
+        df = make_sample_df()
+        encoder = FeatureEncoder()
+
+        with self.assertRaises(KeyError):
+            encoder.one_hot(df, "country")
 
     def test_label_encode_assigns_codes_in_sorted_order(self):
         """Test que verifica que label_encode, sin mapping, asigna códigos
@@ -91,7 +106,14 @@ class TestFeatureEncoder(unittest.TestCase):
         - Construir la Serie esperada: BOG->0, LPZ->1, SCL->2, con name="city_code" y dtype int64
         - Comparar con pandas.testing.assert_series_equal
         """
-        self.fail("TODO: implementar este test")
+        df = make_sample_df()
+        encoder = FeatureEncoder()
+
+        result = encoder.label_encode(df, "city")
+
+        # city = ["SCL", "LPZ", "SCL", "BOG"] -> BOG=0, LPZ=1, SCL=2
+        expected = pd.Series([2, 1, 2, 0], name="city_code", dtype="int64")
+        pdt.assert_series_equal(result, expected)
 
     def test_label_encode_raises_valueerror_for_unseen_category(self):
         """Test que verifica que label_encode lanza ValueError cuando el mapping
@@ -103,7 +125,11 @@ class TestFeatureEncoder(unittest.TestCase):
           (falta "BOG")
         - Verificar que se lanza un ValueError (usar self.assertRaises)
         """
-        self.fail("TODO: implementar este test")
+        df = make_sample_df()
+        encoder = FeatureEncoder()
+
+        with self.assertRaises(ValueError):
+            encoder.label_encode(df, "city", mapping={"SCL": 0, "LPZ": 1})
 
     def test_bin_numeric_assigns_expected_labels(self):
         """Test que verifica que bin_numeric agrega la columna de intervalos correcta.
@@ -116,7 +142,17 @@ class TestFeatureEncoder(unittest.TestCase):
           (usar self.assertEqual comparando list(result["age_bin"]))
         - Verificar que las columnas originales siguen presentes (usar self.assertIn)
         """
-        self.fail("TODO: implementar este test")
+        df = make_sample_df()
+        encoder = FeatureEncoder()
+
+        result = encoder.bin_numeric(
+            df, "age", edges=[0, 18, 65, 120], labels=["young", "adult", "senior"]
+        )
+
+        # age = [17, 34, 70, 45]
+        self.assertEqual(list(result["age_bin"]), ["young", "adult", "senior", "adult"])
+        for col in ["city", "age", "name"]:
+            self.assertIn(col, result.columns)
 
     def test_bin_numeric_raises_typeerror_for_non_numeric_column(self):
         """Test que verifica que bin_numeric lanza TypeError con una columna de texto.
@@ -126,7 +162,11 @@ class TestFeatureEncoder(unittest.TestCase):
         - Llamar a bin_numeric con col="name", edges=[0, 1], labels=["x"]
         - Verificar que se lanza un TypeError (usar self.assertRaises)
         """
-        self.fail("TODO: implementar este test")
+        df = make_sample_df()
+        encoder = FeatureEncoder()
+
+        with self.assertRaises(TypeError):
+            encoder.bin_numeric(df, "name", edges=[0, 1], labels=["x"])
 
     def test_bin_numeric_does_not_modify_original_dataframe(self):
         """Test que verifica que bin_numeric devuelve una copia y no altera el
@@ -139,7 +179,17 @@ class TestFeatureEncoder(unittest.TestCase):
           (usar pandas.testing.assert_frame_equal)
         - Verificar que "age_bin" NO está en las columnas del original (usar self.assertNotIn)
         """
-        self.fail("TODO: implementar este test")
+        df = make_sample_df()
+        original = df.copy()
+        encoder = FeatureEncoder()
+
+        encoder.bin_numeric(
+            df, "age", edges=[0, 18, 65, 120], labels=["young", "adult", "senior"]
+        )
+
+        pdt.assert_frame_equal(df, original)
+        self.assertNotIn("age_bin", df.columns)
+
 
 
 if __name__ == "__main__":
